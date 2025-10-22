@@ -1,379 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Innlevering Generativ AI</title>
-</head>
-    <link rel="stylesheet" href="index.css">
-    <style>
-      :root{
-        --w: 900px;   
-        --h: 600px;   
-        --gap: 2px;   
-      }
-
-      body{
-        margin:0;
-        min-height:100vh;
-        display:grid;
-        place-items:center;
-        background:#f3f3f3;
-        font-family:system-ui, Arial, sans-serif;
-      }
-
-      .wrap{ display:flex; flex-direction:column; align-items:center; gap:14px; }
-      .stage{ perspective:1600px; }
-
-      .book{
-        position:relative; width:var(--w); height:var(--h);
-        border-radius:12px; background:#fff; overflow:hidden;
-        box-shadow:0 20px 50px rgba(0,0,0,.25);
-        transform-style:preserve-3d;
-      }
-
-      .spine{
-        position:absolute; left:calc(50% - var(--gap)/2); top:0;
-        width:var(--gap); height:100%; z-index:10; pointer-events:none;
-        background:linear-gradient(to right, rgba(0,0,0,.15), rgba(0,0,0,.05), rgba(0,0,0,.15));
-      }
-
-      .cover{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; overflow:hidden; backface-visibility:hidden; }
-      .cover img{ width:100%; height:100%; object-fit:contain; display:block; background:#fff; }
-      .cover.back{ display:none; }
-
-      .spread{ position:absolute; inset:0; display:grid; grid-template-columns:1fr var(--gap) 1fr; opacity:0; pointer-events:none; transition:opacity .25s ease; }
-      .spread.active{ opacity:1; pointer-events:auto; }
-
-      .page{ position:relative; overflow:hidden; background:#fff; transform-style:preserve-3d; }
-      .page img{ width:100%; height:100%; object-fit:contain; display:block; background:#fff; }
-
-      .left::after, .right::after{ content:""; position:absolute; top:0; bottom:0; width:30px; pointer-events:none; }
-      .left::after{ right:0; background:linear-gradient(to right, rgba(0,0,0,.18), rgba(0,0,0,0)); }
-      .right::after{ left:0;  background:linear-gradient(to left,  rgba(0,0,0,.18), rgba(0,0,0,0)); }
-
-      .flip-in-left   { transform-origin:right center;  animation: flipInLeft .5s ease both; }
-      .flip-in-right  { transform-origin:left  center;  animation: flipInRight .5s ease both; }
-      .flip-out-left  { transform-origin:right center;  animation: flipOutLeft .45s ease both; }
-      .flip-out-right { transform-origin:left  center;  animation: flipOutRight .45s ease both; }
-
-      @keyframes flipInLeft   { from{ transform:rotateY(-90deg); } to{ transform:rotateY(0deg); } }
-      @keyframes flipInRight  { from{ transform:rotateY(90deg);  } to{ transform:rotateY(0deg); } }
-      @keyframes flipOutLeft  { from{ transform:rotateY(0deg);   } to{ transform:rotateY(-90deg);} }
-      @keyframes flipOutRight { from{ transform:rotateY(0deg);   } to{ transform:rotateY(90deg); } }
-
-      .controls{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:center; margin: 16px 0; }
-      button{ appearance:none; border:none; background:#222; color:#fff; padding:10px 16px; border-radius:8px; cursor:pointer; }
-      button[disabled]{ opacity:.4; cursor:not-allowed; }
-      .hint{ color:#555; font-size:.95rem; }
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
     <h1>Innlevering Generativ AI</h1>
-    <p>Dette er en enkel HTML-side for innlevering av oppgaver relatert til Generativ AI.</p>
-    <h2>Jeg har valgt å lage en tegneserie ved hjelp av ChatGPT 5.0 </h2>
+    <p>
+      Dette er en enkel HTML-side for innlevering av oppgaver relatert til
+      Generativ AI.
+    </p>
+    <h2>Jeg har valgt å lage en tegneserie ved hjelp av ChatGPT 5.0</h2>
+    <p>Prompts osv er lagt ved i rapporten ved innlevering.</p>
     <article>
-        <section>
-        </section>
+      <section></section>
     </article>
 
-  <div class="wrap">
-    <div class="stage">
-      <div class="book" id="book">
-        <div class="spine" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="stage">
+        <div class="book" id="book">
+          <div class="spine" aria-hidden="true"></div>
 
-        <div class="cover" id="cover">
-          <img src="/img/bilde.png" alt="Forside">
-        </div>
+          <div class="cover" id="cover">
+            <img src="img/bilde.png" alt="Forside" />
+          </div>
 
-        <div class="spread" id="spread">
-          <div class="page left" id="leftPage"><img alt="Venstre side"></div>
-          <div aria-hidden="true"></div>
-          <div class="page right" id="rightPage"><img alt="Høyre side"></div>
+          <div class="spread" id="spread">
+            <div class="page left" id="leftPage">
+              <img alt="Venstre side" />
+            </div>
+            <div aria-hidden="true"></div>
+            <div class="page right" id="rightPage">
+              <img alt="Høyre side" />
+            </div>
+          </div>
+          <div class="cover back" id="backCover">
+            <img alt="Bakside" />
+          </div>
         </div>
-        <div class="cover back" id="backCover">
-          <img alt="Bakside">
-        </div>
+      </div>
+
+      <div class="controls">
+        <button id="prev">◀ Forrige</button>
+        <button id="next">Neste ▶</button>
       </div>
     </div>
 
-    <div class="controls">
-      <button id="prev">◀ Forrige</button>
-      <button id="next">Neste ▶</button>
-    </div>
-  </div>
+    <script>
+      const images = [
+        "img/bilde.png",
+        "img/bilde1.png",
+        "img/bilde2.png",
+        "img/bilde3.png",
+        "img/bilde4.png",
+        "img/bilde5.png",
+        "img/bilde6.png",
+        "img/bilde7.png",
+        "img/bilde8.png",
+        "img/bilde9.png",
+        "img/bilde10.png",
+        "img/bilde11.png",
+      ];
 
-<script>
-  const images = [
-    '/img/bilde.png',
-    '/img/bilde1.png','/img/bilde2.png','/img/bilde3.png','/img/bilde4.png','/img/bilde5.png',
-    '/img/bilde6.png','/img/bilde7.png','/img/bilde8.png','/img/bilde9.png','/img/bilde10.png','/img/bilde11.png'
-  ];
+      const backCoverIndex = images.length - 1;
 
-  const backCoverIndex = images.length - 1;
+      const coverEl = document.getElementById("cover");
+      const backCoverEl = document.getElementById("backCover");
+      const spreadEl = document.getElementById("spread");
+      const leftPage = document.getElementById("leftPage");
+      const rightPage = document.getElementById("rightPage");
+      const leftImg = leftPage.querySelector("img");
+      const rightImg = rightPage.querySelector("img");
 
-  const coverEl     = document.getElementById('cover');
-  const backCoverEl = document.getElementById('backCover');
-  const spreadEl    = document.getElementById('spread');
-  const leftPage    = document.getElementById('leftPage');
-  const rightPage   = document.getElementById('rightPage');
-  const leftImg     = leftPage.querySelector('img');
-  const rightImg    = rightPage.querySelector('img');
+      const btnPrev = document.getElementById("prev");
+      const btnNext = document.getElementById("next");
 
-  const btnPrev = document.getElementById('prev');
-  const btnNext = document.getElementById('next');
-
-  const backImg = backCoverEl.querySelector('img');
-  if (images.length > 1){
-    backImg.src = images[backCoverIndex];
-    backImg.alt = 'Bakside';
-  } else {
-    backCoverEl.style.display = 'none';
-  }
-
-  const FLIP_CLASSES = ['flip-in-left','flip-in-right','flip-out-left','flip-out-right'];
-  let currentIndex = 0;
-  let isAnimating = false;
-
-  function clearFlipClasses(){
-    [leftPage, rightPage].forEach(page => page.classList.remove(...FLIP_CLASSES));
-  }
-
-  function waitForAnimation(element, fallbackMs = 550){
-    return new Promise(resolve => {
-      let finished = false;
-      const done = () => {
-        if (finished) return;
-        finished = true;
-        element.removeEventListener('animationend', done);
-        resolve();
-      };
-      element.addEventListener('animationend', done);
-      setTimeout(done, fallbackMs);
-    });
-  }
-
-  function updateButtons(){
-    btnPrev.disabled = currentIndex === 0 || isAnimating;
-    btnNext.disabled = images.length <= 1 || currentIndex === backCoverIndex || isAnimating;
-  }
-
-  function showCover(direction = 'prev', previousIndex = currentIndex){
-    if (isAnimating) return;
-    const fromSpread = previousIndex >= 1 && previousIndex < backCoverIndex;
-
-    const finish = () => {
-      coverEl.style.display  = 'flex';
-      spreadEl.classList.remove('active');
-      backCoverEl.style.display = 'none';
-      clearFlipClasses();
-      isAnimating = false;
-      updateButtons();
-    };
-
-    if (fromSpread){
-      isAnimating = true;
-      clearFlipClasses();
-      const outLeft = direction === 'prev' ? 'flip-out-right' : 'flip-out-left';
-      const outRight = direction === 'prev' ? 'flip-out-left' : 'flip-out-right';
-      void leftPage.offsetWidth;
-      leftPage.classList.add(outLeft);
-      if (rightPage.style.visibility !== 'hidden'){
-        rightPage.classList.add(outRight);
-      }
-      updateButtons();
-      waitForAnimation(leftPage).then(() => {
-        clearFlipClasses();
-        finish();
-      });
-    } else {
-      finish();
-    }
-  }
-
-  function setSpread(leftIdx){
-    if (leftIdx <= 0 || leftIdx >= backCoverIndex) return;
-    const rightIdx = leftIdx + 1;
-    leftImg.src = images[leftIdx] || '';
-    leftImg.alt = `Side ${leftIdx + 1}`;
-
-    if (rightIdx < backCoverIndex){
-      rightImg.src = images[rightIdx];
-      rightImg.alt = `Side ${rightIdx + 1}`;
-      rightPage.style.visibility = 'visible';
-    } else {
-      rightImg.src = '';
-      rightImg.alt = '';
-      rightPage.style.visibility = 'hidden';
-    }
-  }
-
-  function showSpread(targetLeftIdx, direction = 'next', previousIndex = currentIndex){
-    if (isAnimating) return;
-    isAnimating = true;
-
-    const wasSpread = previousIndex >= 1 && previousIndex < backCoverIndex;
-
-    const incomingLeftClass = direction === 'next' ? 'flip-in-left' : 'flip-in-right';
-    const incomingRightClass = direction === 'next' ? 'flip-in-right' : 'flip-in-left';
-    const outgoingLeftClass = direction === 'next' ? 'flip-out-left' : 'flip-out-right';
-    const outgoingRightClass = direction === 'next' ? 'flip-out-right' : 'flip-out-left';
-
-    const playIncoming = () => {
-      clearFlipClasses();
-      setSpread(targetLeftIdx);
-      coverEl.style.display = 'none';
-      backCoverEl.style.display = 'none';
-      spreadEl.classList.add('active');
-
-      void leftPage.offsetWidth;
-      leftPage.classList.add(incomingLeftClass);
-      if (rightPage.style.visibility !== 'hidden'){
-        rightPage.classList.add(incomingRightClass);
+      const backImg = backCoverEl.querySelector("img");
+      if (images.length > 1) {
+        backImg.src = images[backCoverIndex];
+        backImg.alt = "Bakside";
       } else {
-        rightPage.classList.remove(...FLIP_CLASSES);
+        backCoverEl.style.display = "none";
       }
 
-      updateButtons();
-      waitForAnimation(leftPage).then(() => {
-        clearFlipClasses();
-        isAnimating = false;
-        updateButtons();
-      });
-    };
+      const FLIP_CLASSES = [
+        "flip-in-left",
+        "flip-in-right",
+        "flip-out-left",
+        "flip-out-right",
+      ];
+      let currentIndex = 0;
+      let isAnimating = false;
 
-    if (wasSpread){
-      clearFlipClasses();
-      coverEl.style.display = 'none';
-      backCoverEl.style.display = 'none';
-      spreadEl.classList.add('active');
-
-      void leftPage.offsetWidth;
-      leftPage.classList.add(outgoingLeftClass);
-      if (rightPage.style.visibility !== 'hidden'){
-        rightPage.classList.add(outgoingRightClass);
-      } else {
-        rightPage.classList.remove(...FLIP_CLASSES);
+      function clearFlipClasses() {
+        [leftPage, rightPage].forEach((page) =>
+          page.classList.remove(...FLIP_CLASSES)
+        );
       }
 
-      updateButtons();
-      waitForAnimation(leftPage).then(playIncoming);
-    } else {
-      playIncoming();
-    }
-  }
-
-  function showBackCover(direction = 'next', previousIndex = currentIndex){
-    if (isAnimating) return;
-    const fromSpread = previousIndex >= 1 && previousIndex < backCoverIndex;
-
-    const finish = () => {
-      coverEl.style.display = 'none';
-      spreadEl.classList.remove('active');
-      backCoverEl.style.display = 'flex';
-      isAnimating = false;
-      updateButtons();
-    };
-
-    if (fromSpread){
-      isAnimating = true;
-      clearFlipClasses();
-      const outLeft = direction === 'next' ? 'flip-out-left' : 'flip-out-right';
-      const outRight = direction === 'next' ? 'flip-out-right' : 'flip-out-left';
-      void leftPage.offsetWidth;
-      leftPage.classList.add(outLeft);
-      if (rightPage.style.visibility !== 'hidden'){
-        rightPage.classList.add(outRight);
+      function waitForAnimation(element, fallbackMs = 550) {
+        return new Promise((resolve) => {
+          let finished = false;
+          const done = () => {
+            if (finished) return;
+            finished = true;
+            element.removeEventListener("animationend", done);
+            resolve();
+          };
+          element.addEventListener("animationend", done);
+          setTimeout(done, fallbackMs);
+        });
       }
-      updateButtons();
-      waitForAnimation(leftPage).then(() => {
-        clearFlipClasses();
-        finish();
-      });
-    } else {
-      finish();
-    }
-  }
 
-  function goNext(){
-    if (isAnimating || images.length <= 1) return;
-
-    const prevIndex = currentIndex;
-
-    if (currentIndex === 0){
-      if (backCoverIndex <= 1){
-        currentIndex = backCoverIndex;
-        showBackCover('next', prevIndex);
-      } else {
-        currentIndex = 1;
-        showSpread(1, 'next', prevIndex);
+      function updateButtons() {
+        btnPrev.disabled = currentIndex === 0 || isAnimating;
+        btnNext.disabled =
+          images.length <= 1 || currentIndex === backCoverIndex || isAnimating;
       }
-      return;
-    }
 
-    if (currentIndex === backCoverIndex){
-      return;
-    }
+      function showCover(direction = "prev", previousIndex = currentIndex) {
+        if (isAnimating) return;
+        const fromSpread = previousIndex >= 1 && previousIndex < backCoverIndex;
 
-    let left = currentIndex;
-    if (left % 2 === 0) left += 1;
-    if (left >= backCoverIndex){
-      currentIndex = backCoverIndex;
-      showBackCover('next', prevIndex);
-      return;
-    }
+        const finish = () => {
+          coverEl.style.display = "flex";
+          spreadEl.classList.remove("active");
+          backCoverEl.style.display = "none";
+          clearFlipClasses();
+          isAnimating = false;
+          updateButtons();
+        };
 
-    const candidate = left + 2;
+        if (fromSpread) {
+          isAnimating = true;
+          clearFlipClasses();
+          const outLeft =
+            direction === "prev" ? "flip-out-right" : "flip-out-left";
+          const outRight =
+            direction === "prev" ? "flip-out-left" : "flip-out-right";
+          void leftPage.offsetWidth;
+          leftPage.classList.add(outLeft);
+          if (rightPage.style.visibility !== "hidden") {
+            rightPage.classList.add(outRight);
+          }
+          updateButtons();
+          waitForAnimation(leftPage).then(() => {
+            clearFlipClasses();
+            finish();
+          });
+        } else {
+          finish();
+        }
+      }
 
-    if (candidate < backCoverIndex){
-      currentIndex = candidate;
-      showSpread(currentIndex, 'next', prevIndex);
-    } else {
-      currentIndex = backCoverIndex;
-      showBackCover('next', prevIndex);
-    }
-  }
+      function setSpread(leftIdx) {
+        if (leftIdx <= 0 || leftIdx >= backCoverIndex) return;
+        const rightIdx = leftIdx + 1;
+        leftImg.src = images[leftIdx] || "";
+        leftImg.alt = `Side ${leftIdx + 1}`;
 
-  function goPrev(){
-    if (isAnimating || currentIndex === 0) return;
+        if (rightIdx < backCoverIndex) {
+          rightImg.src = images[rightIdx];
+          rightImg.alt = `Side ${rightIdx + 1}`;
+          rightPage.style.visibility = "visible";
+        } else {
+          rightImg.src = "";
+          rightImg.alt = "";
+          rightPage.style.visibility = "hidden";
+        }
+      }
 
-    const prevIndex = currentIndex;
+      function showSpread(
+        targetLeftIdx,
+        direction = "next",
+        previousIndex = currentIndex
+      ) {
+        if (isAnimating) return;
+        isAnimating = true;
 
-    if (currentIndex === backCoverIndex){
-      if (backCoverIndex <= 1){
-        currentIndex = 0;
-        showCover('prev', prevIndex);
-      } else {
-        const prevLeft = Math.max(1, backCoverIndex - (backCoverIndex % 2 ? 2 : 1));
+        const wasSpread = previousIndex >= 1 && previousIndex < backCoverIndex;
+
+        const incomingLeftClass =
+          direction === "next" ? "flip-in-left" : "flip-in-right";
+        const incomingRightClass =
+          direction === "next" ? "flip-in-right" : "flip-in-left";
+        const outgoingLeftClass =
+          direction === "next" ? "flip-out-left" : "flip-out-right";
+        const outgoingRightClass =
+          direction === "next" ? "flip-out-right" : "flip-out-left";
+
+        const playIncoming = () => {
+          clearFlipClasses();
+          setSpread(targetLeftIdx);
+          coverEl.style.display = "none";
+          backCoverEl.style.display = "none";
+          spreadEl.classList.add("active");
+
+          void leftPage.offsetWidth;
+          leftPage.classList.add(incomingLeftClass);
+          if (rightPage.style.visibility !== "hidden") {
+            rightPage.classList.add(incomingRightClass);
+          } else {
+            rightPage.classList.remove(...FLIP_CLASSES);
+          }
+
+          updateButtons();
+          waitForAnimation(leftPage).then(() => {
+            clearFlipClasses();
+            isAnimating = false;
+            updateButtons();
+          });
+        };
+
+        if (wasSpread) {
+          clearFlipClasses();
+          coverEl.style.display = "none";
+          backCoverEl.style.display = "none";
+          spreadEl.classList.add("active");
+
+          void leftPage.offsetWidth;
+          leftPage.classList.add(outgoingLeftClass);
+          if (rightPage.style.visibility !== "hidden") {
+            rightPage.classList.add(outgoingRightClass);
+          } else {
+            rightPage.classList.remove(...FLIP_CLASSES);
+          }
+
+          updateButtons();
+          waitForAnimation(leftPage).then(playIncoming);
+        } else {
+          playIncoming();
+        }
+      }
+
+      function showBackCover(direction = "next", previousIndex = currentIndex) {
+        if (isAnimating) return;
+        const fromSpread = previousIndex >= 1 && previousIndex < backCoverIndex;
+
+        const finish = () => {
+          coverEl.style.display = "none";
+          spreadEl.classList.remove("active");
+          backCoverEl.style.display = "flex";
+          isAnimating = false;
+          updateButtons();
+        };
+
+        if (fromSpread) {
+          isAnimating = true;
+          clearFlipClasses();
+          const outLeft =
+            direction === "next" ? "flip-out-left" : "flip-out-right";
+          const outRight =
+            direction === "next" ? "flip-out-right" : "flip-out-left";
+          void leftPage.offsetWidth;
+          leftPage.classList.add(outLeft);
+          if (rightPage.style.visibility !== "hidden") {
+            rightPage.classList.add(outRight);
+          }
+          updateButtons();
+          waitForAnimation(leftPage).then(() => {
+            clearFlipClasses();
+            finish();
+          });
+        } else {
+          finish();
+        }
+      }
+
+      function goNext() {
+        if (isAnimating || images.length <= 1) return;
+
+        const prevIndex = currentIndex;
+
+        if (currentIndex === 0) {
+          if (backCoverIndex <= 1) {
+            currentIndex = backCoverIndex;
+            showBackCover("next", prevIndex);
+          } else {
+            currentIndex = 1;
+            showSpread(1, "next", prevIndex);
+          }
+          return;
+        }
+
+        if (currentIndex === backCoverIndex) {
+          return;
+        }
+
+        let left = currentIndex;
+        if (left % 2 === 0) left += 1;
+        if (left >= backCoverIndex) {
+          currentIndex = backCoverIndex;
+          showBackCover("next", prevIndex);
+          return;
+        }
+
+        const candidate = left + 2;
+
+        if (candidate < backCoverIndex) {
+          currentIndex = candidate;
+          showSpread(currentIndex, "next", prevIndex);
+        } else {
+          currentIndex = backCoverIndex;
+          showBackCover("next", prevIndex);
+        }
+      }
+
+      function goPrev() {
+        if (isAnimating || currentIndex === 0) return;
+
+        const prevIndex = currentIndex;
+
+        if (currentIndex === backCoverIndex) {
+          if (backCoverIndex <= 1) {
+            currentIndex = 0;
+            showCover("prev", prevIndex);
+          } else {
+            const prevLeft = Math.max(
+              1,
+              backCoverIndex - (backCoverIndex % 2 ? 2 : 1)
+            );
+            currentIndex = prevLeft;
+            showSpread(prevLeft, "prev", prevIndex);
+          }
+          return;
+        }
+
+        if (currentIndex <= 1) {
+          currentIndex = 0;
+          showCover("prev", prevIndex);
+          return;
+        }
+
+        let left = currentIndex;
+        if (left % 2 === 0) left -= 1;
+        const prevLeft = Math.max(1, left - 2);
         currentIndex = prevLeft;
-        showSpread(prevLeft, 'prev', prevIndex);
+        showSpread(prevLeft, "prev", prevIndex);
       }
-      return;
-    }
 
-    if (currentIndex <= 1){
-      currentIndex = 0;
-      showCover('prev', prevIndex);
-      return;
-    }
+      showCover();
+      updateButtons();
 
-    let left = currentIndex;
-    if (left % 2 === 0) left -= 1;
-    const prevLeft = Math.max(1, left - 2);
-    currentIndex = prevLeft;
-    showSpread(prevLeft, 'prev', prevIndex);
-  }
+      btnNext.addEventListener("click", goNext);
+      btnPrev.addEventListener("click", goPrev);
 
-  showCover();
-  updateButtons();
-
-  btnNext.addEventListener('click', goNext);
-  btnPrev.addEventListener('click', goPrev);
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') goNext();
-    if (e.key === 'ArrowLeft')  goPrev();
-  });
-</script>
-</body>
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") goNext();
+        if (e.key === "ArrowLeft") goPrev();
+      });
+    </script>
+  </body>
 </html>

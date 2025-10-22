@@ -1,48 +1,240 @@
+:root {
+  --w: 900px;
+  --h: 600px;
+  --gap: 2px;
+}
+
 body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #f3f3f3;
+  font-family: system-ui, Arial, sans-serif;
+  zoom: 0.8;
+}
 
-  .book-container {
-    position: relative;
-    width: 350px;
-    height: 500px;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    background: #fff;
-    border-radius: 10px;
-  }
+.cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #fff;
+}
+.cover.back {
+  display: none;
+}
 
-  .book-page {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.4s ease;
-    opacity: 0;
-  }
+.spread {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr var(--gap) 1fr;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.spread.active {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  .book-page.active {
-    opacity: 1;
-  }
+.page {
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  transform-style: preserve-3d;
+}
+.page img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #fff;
+}
 
-  .controls {
-    margin-top: 15px;
-    display: flex;
-    gap: 20px;
-  }
+.left::after,
+.right::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  pointer-events: none;
+}
+.left::after {
+  right: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0));
+}
+.right::after {
+  left: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0));
+}
 
-  button {
-    background: #333;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+.flip-in-left {
+  transform-origin: right center;
+  animation: flipInLeft 0.5s ease both;
+}
+.flip-in-right {
+  transform-origin: left center;
+  animation: flipInRight 0.5s ease both;
+}
+.flip-out-left {
+  transform-origin: right center;
+  animation: flipOutLeft 0.45s ease both;
+}
+.flip-out-right {
+  transform-origin: left center;
+  animation: flipOutRight 0.45s ease both;
+}
 
-  button:hover {
-    background: #555;
+@keyframes flipInLeft {
+  from {
+    transform: rotateY(-90deg);
   }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+@keyframes flipInRight {
+  from {
+    transform: rotateY(90deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+@keyframes flipOutLeft {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(-90deg);
+  }
+}
+@keyframes flipOutRight {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(90deg);
+  }
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 16px 0;
+}
+button {
+  appearance: none;
+  border: none;
+  background: #222;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.hint {
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.stage {
+  perspective: 1600px;
+}
+
+.book {
+  position: relative;
+  width: var(--w);
+  height: var(--h);
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  transform-style: preserve-3d;
+}
+
+.spine {
+  position: absolute;
+  left: calc(50% - var(--gap) / 2);
+  top: 0;
+  width: var(--gap);
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.05),
+    rgba(0, 0, 0, 0.15)
+  );
+}
+
+.book-container {
+  position: relative;
+  width: 350px;
+  height: 500px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  border-radius: 10px;
+}
+
+.book-page {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.4s ease;
+  opacity: 0;
+}
+
+.book-page.active {
+  opacity: 1;
+}
+
+.controls {
+  margin-top: 15px;
+  display: flex;
+  gap: 20px;
+}
+
+button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #555;
+}
